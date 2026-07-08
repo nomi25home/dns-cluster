@@ -1,0 +1,15 @@
+# OS / editor cruft
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Local credential/env files -- TECH_PASS and similar should never be committed
+.env
+.envrc
+*.env
+
+# Ad-hoc local notes, backups, or API dumps that might contain live data
+*.bak
+*.orig
+*.log
