@@ -96,6 +96,42 @@ Current overrides:
 | proxmox.mihirfamily.com           | 192.168.74.13  |
 | homeassistant.mihirfamily.com     | 192.168.74.11  |
 
+### `home.mihirfamily.com` — Internal reverse-proxy services
+
+Primary authoritative zone for all services behind the Caddy reverse proxy (LXC 100, `192.168.74.45`). A wildcard record covers every subdomain; explicit records are redundant but can be added for clarity.
+
+Zone: **Primary on DNS-A**, replicated to B/C/D via catalog zone.
+
+| Record | Type | IP | Notes |
+|--------|------|----|-------|
+| `@` | A | 192.168.74.45 | apex |
+| `*` | A | 192.168.74.45 | wildcard — covers all subdomains |
+| `n8n` | A | 192.168.74.45 | explicit (redundant with wildcard) |
+
+**Services behind the wildcard** (all → `192.168.74.45`, Caddy routes by `Host:` header):
+
+| Subdomain | Backend | Notes |
+|-----------|---------|-------|
+| `proxmox` | 192.168.74.13:8006 | self-signed TLS |
+| `netbox` | 192.168.74.186:80 | strips `X-Forwarded-Host` (Django quirk) |
+| `dns1` | 192.168.74.240:5380 | Technitium VIP-A |
+| `dns2` | 192.168.74.245:5380 | Technitium VIP-B |
+| `pdm` | 192.168.74.98:8443 | Proxmox DC Manager, self-signed TLS |
+| `printer` | 192.168.74.12:80 | HTTP only (old TLS cipher incompatible with Go) |
+| `guac` | 192.168.74.124:8080 | Guacamole |
+| `unraid` | 192.168.74.7:2433 | self-signed TLS; `Location` header rewritten |
+| `pbs` | 192.168.74.7:8007 | Proxmox Backup Server, self-signed TLS |
+| `homepage` | 192.168.74.40:3000 | gethomepage.dev |
+| `dockge` | 192.168.74.45:5001 | container manager |
+| `ha` | 192.168.74.11:8123 | Home Assistant |
+| `uptime` | 192.168.74.45:3001 | Uptime Kuma |
+| `frigate` | 192.168.74.7:5000 | Frigate NVR |
+| `n8n` | 192.168.74.45:5678 | n8n workflow automation |
+
+TLS is handled by Caddy via Cloudflare DNS-01 (`*.home.mihirfamily.com` wildcard cert). All backends are HTTP except those marked self-signed TLS, which use `tls_insecure_skip_verify`.
+
+To add a new service: add a Caddy route in `/opt/stacks/caddy/Caddyfile` on LXC 100. No new DNS record needed — the wildcard covers it.
+
 ### `dnscluster.home.arpa` — Cluster internal zone
 
 Used for cluster node naming and TSIG. Don't touch this by hand.
@@ -119,6 +155,23 @@ OCTET=$(echo $IP | cut -d. -f4)
 
 curl -s "http://127.0.0.1:5380/api/zones/records/add?token=$TOKEN&zone=lan&domain=${HOST}.lan&type=A&ttl=3600&ipAddress=$IP"
 curl -s "http://127.0.0.1:5380/api/zones/records/add?token=$TOKEN&zone=74.168.192.in-addr.arpa&domain=${OCTET}.74.168.192.in-addr.arpa&type=PTR&ttl=3600&ptrName=${HOST}.lan"
+EOF
+```
+
+### Add a record to `home.mihirfamily.com`
+
+Usually not needed — the wildcard `* → 192.168.74.45` covers everything. Only add an explicit record if a service needs a different IP.
+
+```bash
+ssh DNS-A bash -s <<'EOF'
+TOKEN=$(curl -s "http://127.0.0.1:5380/api/user/login?user=admin&pass=TechDNS%23Cluster2025&includeInfo=true" | jq -r .token)
+curl -s -G "http://127.0.0.1:5380/api/zones/records/add" \
+  --data-urlencode "token=$TOKEN" \
+  --data-urlencode "domain=NEWNAME.home.mihirfamily.com" \
+  --data-urlencode "zone=home.mihirfamily.com" \
+  --data-urlencode "type=A" \
+  --data-urlencode "ipAddress=192.168.74.45" \
+  --data-urlencode "ttl=300"
 EOF
 ```
 
@@ -199,6 +252,8 @@ Web console: `http://192.168.74.240:5380` or `http://192.168.74.245:5380` (login
 - **openssh upgrades in LXC (DNS-C/D)**: You may see `Could not execute systemctl` — this is cosmetic. SSH restarts fine; verify with `systemctl status ssh` before assuming you're locked out.
 - **Rolling changes**: For changes touching all 4 nodes (keepalived config, OS upgrades), do one node at a time and verify VIP failover before continuing.
 - **Orbi DNS proxy**: LAN clients always query the Orbi (192.168.74.1); the Orbi forwards to the VIPs. DNS traffic is Orbi → VIP, not client → VIP directly. DHCP DNS field is not configurable on the RBR750 firmware.
+- **AXFR does not work between VIPs**: Standard `dig AXFR @VIP` always fails. Zone replication uses Technitium's native catalog zone (`cluster-catalog.dnscluster.home.arpa`), not BIND-style AXFR. Always make changes via DNS-A's localhost API (or `ssh DNS-A`) — never try to add zones directly to VIP-B/C/D.
+- **`home.mihirfamily.com` zone transfer policy**: Set to `AllowAll` on DNS-A (was `AllowOnlyZoneNameServers`). This is fine since it's an internal zone. If you need to tighten it, the zone name servers must resolve to actual node IPs (not VIPs) for AXFR to be permitted.
 
 ---
 
