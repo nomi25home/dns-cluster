@@ -127,6 +127,8 @@ Zone: **Primary on DNS-A**, replicated to B/C/D via catalog zone.
 | `uptime` | 192.168.74.45:3001 | Uptime Kuma |
 | `frigate` | 192.168.74.7:5000 | Frigate NVR |
 | `n8n` | 192.168.74.45:5678 | n8n workflow automation |
+| `dozzle` | 192.168.74.7:8082 | Docker log viewer (Unraid) |
+| `bambuddy` | 192.168.74.7:6060 | Bambu Lab printer monitor (Unraid) |
 
 TLS is handled by Caddy via Cloudflare DNS-01 (`*.home.mihirfamily.com` wildcard cert). All backends are HTTP except those marked self-signed TLS, which use `tls_insecure_skip_verify`.
 
