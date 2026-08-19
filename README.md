@@ -77,6 +77,7 @@ Primary authoritative zone for internal hostnames. Replicated to all nodes.
 | amcrest-familyroom.lan        | 192.168.74.72   |
 | amcrest-masterbedroom.lan     | 192.168.74.111  |
 | esp32c3.lan                   | 192.168.74.159  |
+| a1mini.lan                    | 192.168.74.147  |
 
 ### `74.168.192.in-addr.arpa` — Reverse DNS (PTR records)
 
