@@ -129,6 +129,7 @@ Zone: **Primary on DNS-A**, replicated to B/C/D via catalog zone.
 | `n8n` | 192.168.74.45:5678 | n8n workflow automation |
 | `dozzle` | 192.168.74.7:8082 | Docker log viewer (Unraid) |
 | `bambuddy` | 192.168.74.7:6060 | Bambu Lab printer monitor (Unraid) |
+| `a1mini` | **192.168.74.147** (direct, no Caddy) | Bambu Lab A1 Mini — explicit A record overrides wildcard |
 
 TLS is handled by Caddy via Cloudflare DNS-01 (`*.home.mihirfamily.com` wildcard cert). All backends are HTTP except those marked self-signed TLS, which use `tls_insecure_skip_verify`.
 
