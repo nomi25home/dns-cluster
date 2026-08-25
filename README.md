@@ -80,6 +80,7 @@ Primary authoritative zone for internal hostnames. Replicated to all nodes.
 | a1mini.lan                    | 192.168.74.147  |
 | bambuddy.lan                  | 192.168.74.7    |
 | dozzle.lan                    | 192.168.74.7    |
+| n8n.lan                       | 192.168.74.45   |
 
 ### `74.168.192.in-addr.arpa` — Reverse DNS (PTR records)
 
