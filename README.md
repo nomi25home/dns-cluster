@@ -227,6 +227,26 @@ Note: `blockListUrls` is the full replacement list — include every URL you wan
 
 ---
 
+## Home Assistant Monitoring
+
+Two `ping` binary sensors in Home Assistant poll each VIP every 5 seconds:
+
+| Entity | Host | Friendly Name |
+|--------|------|---------------|
+| `binary_sensor.192_168_74_240` | 192.168.74.240 | DNS VIP-A |
+| `binary_sensor.192_168_74_245` | 192.168.74.245 | DNS VIP-B |
+
+Two automations handle alerting:
+
+- **`automation.dns_vip_down_alert`** — fires after a VIP has been unreachable for **30 consecutive seconds**. Pushes `🔴 DNS VIP-x is DOWN` to all phones with a deep-link to the surviving VIP's Technitium UI. The 30-second debounce means a clean VRRP failover (~3–5 s) never pages.
+- **`automation.dns_vip_up_alert`** — fires immediately when a VIP recovers (`off → on`). Pushes `✅ DNS VIP-x is back UP`.
+
+Both run in `parallel` mode (max 2) so simultaneous loss of both VIPs generates two independent alerts.
+
+Full YAML and test results: [`homelab-iac/docs/ha-dns-vip-monitoring.md`](https://github.com/nomi25home/homelab-iac/blob/main/docs/ha-dns-vip-monitoring.md).
+
+---
+
 ## Health Checks
 
 ```bash
