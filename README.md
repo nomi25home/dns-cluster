@@ -249,18 +249,74 @@ Full YAML and test results: [`homelab-iac/docs/ha-dns-vip-monitoring.md`](https:
 
 ## Netbox
 
-All 4 nodes and both VIPs are registered in Netbox (`https://netbox.home.mihirfamily.com`):
+Web UI: `https://netbox.home.mihirfamily.com`. Full inventory runbook: [`homelab-iac/docs/netbox.md`](https://github.com/nomi25home/homelab-iac/blob/main/docs/netbox.md). Seed playbook: [`homelab-iac/ansible/playbooks/netbox_seed.yml`](https://github.com/nomi25home/homelab-iac/blob/main/ansible/playbooks/netbox_seed.yml).
+
+### DNS Cluster
 
 | Netbox record | Type | IP | Notes |
-|---------------|------|----|-------|
+|---|---|---|---|
 | dns-a | `dcim.device` (DietPi) | 192.168.74.241/24 | primary_ip4 set |
 | dns-b | `dcim.device` (DietPi) | 192.168.74.242/24 | primary_ip4 set |
-| dns-c | `virtualization.vm` (Proxmox cluster) | 192.168.74.243/24 | primary_ip4 set |
-| dns-d | `virtualization.vm` (Proxmox cluster) | 192.168.74.244/24 | primary_ip4 set |
-| VIP-A | IP address (role: anycast) | 192.168.74.240/24 | dns1.lan |
-| VIP-B | IP address (role: anycast) | 192.168.74.245/24 | dns2.lan |
+| dns-c | `virtualization.vm` (Proxmox) | 192.168.74.243/24 | primary_ip4 set |
+| dns-d | `virtualization.vm` (Proxmox) | 192.168.74.244/24 | primary_ip4 set |
+| VIP-A | IP address (anycast) | 192.168.74.240/24 | dns1.lan |
+| VIP-B | IP address (anycast) | 192.168.74.245/24 | dns2.lan |
 
-All nodes carry the `DNS Server` device role. The seed Ansible playbook is at [`homelab-iac/ansible/playbooks/netbox_seed.yml`](https://github.com/nomi25home/homelab-iac/blob/main/ansible/playbooks/netbox_seed.yml).
+All nodes carry the `DNS Server` device role.
+
+### Full Homelab Inventory (as of 2026-08-26)
+
+**Network**
+
+| Record | Type | IP |
+|---|---|---|
+| root (Orbi RBR750) | `dcim.device` | 192.168.74.1/24 |
+| satellite-downstairs | `dcim.device` | 192.168.74.2/24 |
+| satellite-upstairs | `dcim.device` | 192.168.74.3/24 |
+| modem | `dcim.device` | 192.168.100.1/24 |
+
+**Servers & Hypervisors**
+
+| Record | Type | IP |
+|---|---|---|
+| proxmox | `dcim.device` | 192.168.74.13/24 |
+| unraid | `dcim.device` | 192.168.74.7/24 |
+
+**Proxmox VMs / LXCs**
+
+| Record | Type | IP |
+|---|---|---|
+| home-assistant | `virtualization.vm` | 192.168.74.11/24 |
+| dockge | `virtualization.vm` | 192.168.74.45/24 |
+| homepage | `virtualization.vm` | 192.168.74.40/24 |
+| netbox | `virtualization.vm` | 192.168.74.154/24 |
+| proxmox-datacenter-manager | `virtualization.vm` | 192.168.74.98/24 |
+| nginxproxymanager | `virtualization.vm` | 192.168.74.99/24 |
+| apache-guacamole | `virtualization.vm` | 192.168.74.155/24 |
+| tailscale | `virtualization.vm` | 192.168.74.6/24 |
+| twingate | `virtualization.vm` | 192.168.74.54/24 |
+| ollama-vibecoded | `virtualization.vm` | 192.168.74.102/24 |
+| bamburun | `virtualization.vm` | 192.168.74.101/24 |
+
+**IoT & Peripherals**
+
+| Record | Type | IP | Role |
+|---|---|---|---|
+| printer | `dcim.device` | 192.168.74.12/24 | Printer |
+| sonoff-rf-bridge | `dcim.device` | 192.168.74.20/24 | Home Automation |
+| hue-hub | `dcim.device` | 192.168.74.150/24 | Home Automation |
+| wled-niji | `dcim.device` | 192.168.74.32/24 | Home Automation |
+| sprinkler-pi | `dcim.device` | 192.168.74.178/24 | Irrigation Controller |
+| appolo-42 | `dcim.device` | 192.168.74.42/24 | Air Quality Sensor |
+| appolo-43 | `dcim.device` | 192.168.74.43/24 | Air Quality Sensor |
+| appolo-68 | `dcim.device` | 192.168.74.68/24 | Air Quality Sensor |
+| amcrest-familyroom | `dcim.device` | 192.168.74.72/24 | IP Camera |
+| amcrest-masterbedroom | `dcim.device` | 192.168.74.111/24 | IP Camera |
+| a1mini | `dcim.device` | 192.168.74.147/24 | 3D Printer |
+| esp32c3 | `dcim.device` | 192.168.74.159/24 | IoT Device |
+| jetkvm | `dcim.device` | 192.168.74.148/24 | KVM Remote Console |
+| lorex-nvr | `dcim.device` | 192.168.74.15/24 | NVR / Camera System |
+| stapal-6e-1 | `dcim.device` | 192.168.74.162/24 | AI Compute |
 
 ---
 
