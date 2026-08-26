@@ -289,10 +289,10 @@ All nodes carry the `DNS Server` device role.
 | home-assistant | `virtualization.vm` | 192.168.74.11/24 |
 | dockge | `virtualization.vm` | 192.168.74.45/24 |
 | homepage | `virtualization.vm` | 192.168.74.40/24 |
-| netbox | `virtualization.vm` | 192.168.74.154/24 |
+| netbox | `virtualization.vm` | 192.168.74.186/24 |
 | proxmox-datacenter-manager | `virtualization.vm` | 192.168.74.98/24 |
 | nginxproxymanager | `virtualization.vm` | 192.168.74.99/24 |
-| apache-guacamole | `virtualization.vm` | 192.168.74.155/24 |
+| apache-guacamole | `virtualization.vm` | 192.168.74.124/24 |
 | tailscale | `virtualization.vm` | 192.168.74.6/24 |
 | twingate | `virtualization.vm` | 192.168.74.54/24 |
 | ollama-vibecoded | `virtualization.vm` | 192.168.74.102/24 |
