@@ -247,6 +247,23 @@ Full YAML and test results: [`homelab-iac/docs/ha-dns-vip-monitoring.md`](https:
 
 ---
 
+## Netbox
+
+All 4 nodes and both VIPs are registered in Netbox (`https://netbox.home.mihirfamily.com`):
+
+| Netbox record | Type | IP | Notes |
+|---------------|------|----|-------|
+| dns-a | `dcim.device` (DietPi) | 192.168.74.241/24 | primary_ip4 set |
+| dns-b | `dcim.device` (DietPi) | 192.168.74.242/24 | primary_ip4 set |
+| dns-c | `virtualization.vm` (Proxmox cluster) | 192.168.74.243/24 | primary_ip4 set |
+| dns-d | `virtualization.vm` (Proxmox cluster) | 192.168.74.244/24 | primary_ip4 set |
+| VIP-A | IP address (role: anycast) | 192.168.74.240/24 | dns1.lan |
+| VIP-B | IP address (role: anycast) | 192.168.74.245/24 | dns2.lan |
+
+All nodes carry the `DNS Server` device role. The seed Ansible playbook is at [`homelab-iac/ansible/playbooks/netbox_seed.yml`](https://github.com/nomi25home/homelab-iac/blob/main/ansible/playbooks/netbox_seed.yml).
+
+---
+
 ## Health Checks
 
 ```bash
