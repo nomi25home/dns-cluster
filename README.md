@@ -129,7 +129,8 @@ Zone: **Primary on DNS-A**, replicated to B/C/D via catalog zone.
 | `dockge` | 192.168.74.45:5001 | container manager |
 | `ha` | 192.168.74.11:8123 | Home Assistant |
 | `uptime` | 192.168.74.45:3001 | Uptime Kuma |
-| `frigate` | 192.168.74.7:5000 | Frigate NVR |
+| `frigate` | 192.168.74.7:8971 | Frigate NVR (authenticated port), self-signed TLS |
+| `nvr` | 192.168.74.217:8088 | NVR frontend for Frigate (ALP4); Caddy `basic_auth` |
 | `n8n` | 192.168.74.45:5678 | n8n workflow automation |
 | `dozzle` | 192.168.74.7:8082 | Docker log viewer (Unraid) |
 | `bambuddy` | 192.168.74.7:6060 | Bambu Lab printer monitor (Unraid) |
