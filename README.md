@@ -10,7 +10,7 @@ A 4-node HA Technitium DNS cluster with 2 floating VRRP VIPs, ad-blocking, Cloud
 
 | Node  | IP             | OS                      | Technitium Role |
 |-------|----------------|-------------------------|-----------------|
-| DNS-A | 192.168.74.241 | Debian 12 (DietPi)      | Primary         |
+| DNS-A | 192.168.74.29 | Debian 12 (DietPi)      | Primary         |
 | DNS-B | 192.168.74.242 | Debian 12 (DietPi)      | Secondary       |
 | DNS-C | 192.168.74.243 | Debian 13 (Proxmox LXC) | Secondary       |
 | DNS-D | 192.168.74.244 | Debian 13 (Proxmox LXC) | Secondary       |
@@ -78,8 +78,8 @@ Primary authoritative zone for internal hostnames. Replicated to all nodes.
 | amcrest-masterbedroom.lan     | 192.168.74.111  |
 | esp32c3.lan                   | 192.168.74.159  |
 | a1mini.lan                    | 192.168.74.147  |
-| bambuddy.lan                  | 192.168.74.7    |
-| dozzle.lan                    | 192.168.74.7    |
+| bambuddy.lan                  | 192.168.74.14    |
+| dozzle.lan                    | 192.168.74.14    |
 | n8n.lan                       | 192.168.74.45   |
 
 ### `74.168.192.in-addr.arpa` — Reverse DNS (PTR records)
@@ -96,7 +96,7 @@ Current overrides:
 
 | Name                              | Local IP       |
 |-----------------------------------|----------------|
-| unraid.mihirfamily.com            | 192.168.74.7   |
+| unraid.mihirfamily.com            | 192.168.74.14   |
 | proxmox.mihirfamily.com           | 192.168.74.13  |
 | homeassistant.mihirfamily.com     | 192.168.74.11  |
 
@@ -123,17 +123,17 @@ Zone: **Primary on DNS-A**, replicated to B/C/D via catalog zone.
 | `pdm` | 192.168.74.98:8443 | Proxmox DC Manager, self-signed TLS |
 | `printer` | 192.168.74.12:80 | HTTP only (old TLS cipher incompatible with Go) |
 | `guac` | 192.168.74.124:8080 | Guacamole |
-| `unraid` | 192.168.74.7:2433 | self-signed TLS; `Location` header rewritten |
-| `pbs` | 192.168.74.7:8007 | Proxmox Backup Server, self-signed TLS |
+| `unraid` | 192.168.74.14:2433 | self-signed TLS; `Location` header rewritten |
+| `pbs` | 192.168.74.14:8007 | Proxmox Backup Server, self-signed TLS |
 | `homepage` | 192.168.74.40:3000 | gethomepage.dev |
 | `dockge` | 192.168.74.45:5001 | container manager |
 | `ha` | 192.168.74.11:8123 | Home Assistant |
 | `uptime` | 192.168.74.45:3001 | Uptime Kuma |
-| `frigate` | 192.168.74.7:8971 | Frigate NVR (authenticated port), self-signed TLS |
+| `frigate` | 192.168.74.14:8971 | Frigate NVR (authenticated port), self-signed TLS |
 | `nvr` | 192.168.74.15:8088 | NVR frontend for Frigate (ALP4); Caddy `basic_auth` |
 | `n8n` | 192.168.74.45:5678 | n8n workflow automation |
-| `dozzle` | 192.168.74.7:8082 | Docker log viewer (Unraid) |
-| `bambuddy` | 192.168.74.7:6060 | Bambu Lab printer monitor (Unraid) |
+| `dozzle` | 192.168.74.14:8082 | Docker log viewer (Unraid) |
+| `bambuddy` | 192.168.74.14:6060 | Bambu Lab printer monitor (Unraid) |
 | `a1mini` | **192.168.74.147** (direct, no Caddy) | Bambu Lab A1 Mini — explicit A record overrides wildcard |
 
 TLS is handled by Caddy via Cloudflare DNS-01 (`*.home.mihirfamily.com` wildcard cert). All backends are HTTP except those marked self-signed TLS, which use `tls_insecure_skip_verify`.
@@ -256,7 +256,7 @@ Web UI: `https://netbox.home.mihirfamily.com`. Full inventory runbook: [`homelab
 
 | Netbox record | Type | IP | Notes |
 |---|---|---|---|
-| dns-a | `dcim.device` (DietPi) | 192.168.74.241/24 | primary_ip4 set |
+| dns-a | `dcim.device` (DietPi) | 192.168.74.29/24 | primary_ip4 set |
 | dns-b | `dcim.device` (DietPi) | 192.168.74.242/24 | primary_ip4 set |
 | dns-c | `virtualization.vm` (Proxmox) | 192.168.74.243/24 | primary_ip4 set |
 | dns-d | `virtualization.vm` (Proxmox) | 192.168.74.244/24 | primary_ip4 set |
@@ -281,7 +281,7 @@ All nodes carry the `DNS Server` device role.
 | Record | Type | IP |
 |---|---|---|
 | proxmox | `dcim.device` | 192.168.74.13/24 |
-| unraid | `dcim.device` | 192.168.74.7/24 |
+| unraid | `dcim.device` | 192.168.74.14/24 |
 
 **Proxmox VMs / LXCs**
 
