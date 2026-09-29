@@ -76,6 +76,11 @@ Primary authoritative zone for internal hostnames. Replicated to all nodes.
 | appolo-68.lan                 | 192.168.74.68   |
 | amcrest-familyroom.lan        | 192.168.74.72   |
 | amcrest-masterbedroom.lan     | 192.168.74.111  |
+| camera-garage-up.lan          | 192.168.74.61   |
+| camera-LR-up.lan              | 192.168.74.63   |
+| camera-LR-side.lan            | 192.168.74.65   |
+| camera-DR-up.lan              | 192.168.74.66   |
+| camera-FR-up.lan              | 192.168.74.67   |
 | esp32c3.lan                   | 192.168.74.159  |
 | a1mini.lan                    | 192.168.74.189  |
 | bambuddy.lan                  | 192.168.74.14    |
@@ -313,6 +318,12 @@ All nodes carry the `DNS Server` device role.
 | appolo-68 | `dcim.device` | 192.168.74.68/24 | Air Quality Sensor |
 | amcrest-familyroom | `dcim.device` | 192.168.74.72/24 | IP Camera |
 | amcrest-masterbedroom | `dcim.device` | 192.168.74.111/24 | IP Camera |
+| camera-garage-up | `dcim.device` | 192.168.74.61/24 | IP Camera (Reolink) |
+| camera-familyroom-side | `dcim.device` | 192.168.74.62/24 | IP Camera (Reolink) |
+| camera-LR-up | `dcim.device` | 192.168.74.63/24 | IP Camera (Reolink) |
+| camera-LR-side | `dcim.device` | 192.168.74.65/24 | IP Camera (Reolink) |
+| camera-DR-up | `dcim.device` | 192.168.74.66/24 | IP Camera (Reolink) |
+| camera-FR-up | `dcim.device` | 192.168.74.67/24 | IP Camera (Reolink) |
 | a1mini | `dcim.device` | 192.168.74.189/24 | 3D Printer |
 | esp32c3 | `dcim.device` | 192.168.74.159/24 | IoT Device |
 | jetkvm | `dcim.device` | 192.168.74.148/24 | KVM Remote Console |
