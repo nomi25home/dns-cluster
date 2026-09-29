@@ -130,7 +130,7 @@ Zone: **Primary on DNS-A**, replicated to B/C/D via catalog zone.
 | `ha` | 192.168.74.11:8123 | Home Assistant |
 | `uptime` | 192.168.74.45:3001 | Uptime Kuma |
 | `frigate` | 192.168.74.7:8971 | Frigate NVR (authenticated port), self-signed TLS |
-| `nvr` | 192.168.74.217:8088 | NVR frontend for Frigate (ALP4); Caddy `basic_auth` |
+| `nvr` | 192.168.74.15:8088 | NVR frontend for Frigate (ALP4); Caddy `basic_auth` |
 | `n8n` | 192.168.74.45:5678 | n8n workflow automation |
 | `dozzle` | 192.168.74.7:8082 | Docker log viewer (Unraid) |
 | `bambuddy` | 192.168.74.7:6060 | Bambu Lab printer monitor (Unraid) |
@@ -316,7 +316,7 @@ All nodes carry the `DNS Server` device role.
 | a1mini | `dcim.device` | 192.168.74.147/24 | 3D Printer |
 | esp32c3 | `dcim.device` | 192.168.74.159/24 | IoT Device |
 | jetkvm | `dcim.device` | 192.168.74.148/24 | KVM Remote Console |
-| lorex-nvr | `dcim.device` | 192.168.74.15/24 | NVR / Camera System |
+| alp4 | `dcim.device` | 192.168.74.15/24 | AAEON PICO-APL4 (DietPi): NVR frontend + NFS storage (was .217; replaced retired Lorex NVR) |
 | stapal-6e-1 | `dcim.device` | 192.168.74.162/24 | AI Compute |
 
 ---
