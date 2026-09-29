@@ -11,14 +11,14 @@ A 4-node HA Technitium DNS cluster with 2 floating VRRP VIPs, ad-blocking, Cloud
 | Node  | IP             | OS                      | Technitium Role |
 |-------|----------------|-------------------------|-----------------|
 | DNS-A | 192.168.74.29 | Debian 12 (DietPi)      | Primary         |
-| DNS-B | 192.168.74.242 | Debian 12 (DietPi)      | Secondary       |
-| DNS-C | 192.168.74.243 | Debian 13 (Proxmox LXC) | Secondary       |
-| DNS-D | 192.168.74.244 | Debian 13 (Proxmox LXC) | Secondary       |
+| DNS-B | 192.168.74.30  | Debian 12 (DietPi)      | Secondary       |
+| DNS-C | 192.168.74.31  | Debian 13 (Proxmox LXC) | Secondary       |
+| DNS-D | 192.168.74.32  | Debian 13 (Proxmox LXC) | Secondary       |
 
 | VIP   | IP             | VRRP router_id | Normal master | Failover order |
 |-------|----------------|----------------|---------------|----------------|
-| VIP-A | 192.168.74.240 | 240            | DNS-A         | A > C > B > D  |
-| VIP-B | 192.168.74.245 | 245            | DNS-B         | B > D > A > C  |
+| VIP-A | 192.168.74.28  | 28             | DNS-A         | A > C > B > D  |
+| VIP-B | 192.168.74.33  | 33             | DNS-B         | B > D > A > C  |
 
 Both VIPs run on the `eth0` interface in unicast mode (no multicast — works across VLANs and inside Proxmox LXC containers). All 4 nodes run two VRRP instances; failover is automatic when keepalived detects a node down.
 
@@ -55,8 +55,8 @@ Block lists loaded on all 4 nodes, auto-updated every 24 hours:
 
 The Netgear Orbi (192.168.74.1) acts as a DNS proxy: its WAN DNS is set to VIP-A (primary) and VIP-B (secondary). DHCP clients receive the Orbi's IP as their DNS server; the Orbi forwards all queries to the VIPs.
 
-- **Primary DNS (Orbi WAN):** 192.168.74.240
-- **Secondary DNS (Orbi WAN):** 192.168.74.245
+- **Primary DNS (Orbi WAN):** 192.168.74.28
+- **Secondary DNS (Orbi WAN):** 192.168.74.33
 - DHCP clients cannot be pushed VIP addresses directly — the Orbi RBR750 firmware doesn't expose DHCP DNS server configuration in its UI, and the backup config is encrypted binary. The proxy approach is the supported workaround for this hardware.
 
 ---
@@ -77,7 +77,7 @@ Primary authoritative zone for internal hostnames. Replicated to all nodes.
 | amcrest-familyroom.lan        | 192.168.74.72   |
 | amcrest-masterbedroom.lan     | 192.168.74.111  |
 | esp32c3.lan                   | 192.168.74.159  |
-| a1mini.lan                    | 192.168.74.147  |
+| a1mini.lan                    | 192.168.74.189  |
 | bambuddy.lan                  | 192.168.74.14    |
 | dozzle.lan                    | 192.168.74.14    |
 | n8n.lan                       | 192.168.74.45   |
@@ -86,7 +86,7 @@ Primary authoritative zone for internal hostnames. Replicated to all nodes.
 
 PTR records exist for all `.lan` hostnames above plus any other statically registered hosts. Replicated to all nodes.
 
-To check: `dig -x 192.168.74.12 @192.168.74.240`
+To check: `dig -x 192.168.74.12 @192.168.74.28`
 
 ### `mihirfamily.com` — Split-horizon overrides
 
@@ -117,12 +117,12 @@ Zone: **Primary on DNS-A**, replicated to B/C/D via catalog zone.
 | Subdomain | Backend | Notes |
 |-----------|---------|-------|
 | `proxmox` | 192.168.74.13:8006 | self-signed TLS |
-| `netbox` | 192.168.74.186:80 | strips `X-Forwarded-Host` (Django quirk) |
-| `dns1` | 192.168.74.240:5380 | Technitium VIP-A |
-| `dns2` | 192.168.74.245:5380 | Technitium VIP-B |
-| `pdm` | 192.168.74.98:8443 | Proxmox DC Manager, self-signed TLS |
+| `netbox` | 192.168.74.23:80 | strips `X-Forwarded-Host` (Django quirk) |
+| `dns1` | 192.168.74.28:5380 | Technitium VIP-A |
+| `dns2` | 192.168.74.33:5380 | Technitium VIP-B |
+| `pdm` | 192.168.74.10:8443 | Proxmox DC Manager, self-signed TLS |
 | `printer` | 192.168.74.12:80 | HTTP only (old TLS cipher incompatible with Go) |
-| `guac` | 192.168.74.124:8080 | Guacamole |
+| `guac` | 192.168.74.22:8080 | Guacamole |
 | `unraid` | 192.168.74.14:2433 | self-signed TLS; `Location` header rewritten |
 | `pbs` | 192.168.74.14:8007 | Proxmox Backup Server, self-signed TLS |
 | `homepage` | 192.168.74.40:3000 | gethomepage.dev |
@@ -134,7 +134,7 @@ Zone: **Primary on DNS-A**, replicated to B/C/D via catalog zone.
 | `n8n` | 192.168.74.45:5678 | n8n workflow automation |
 | `dozzle` | 192.168.74.14:8082 | Docker log viewer (Unraid) |
 | `bambuddy` | 192.168.74.14:6060 | Bambu Lab printer monitor (Unraid) |
-| `a1mini` | **192.168.74.147** (direct, no Caddy) | Bambu Lab A1 Mini — explicit A record overrides wildcard |
+| `a1mini` | **192.168.74.189** (direct, no Caddy) | Bambu Lab A1 Mini — explicit A record overrides wildcard |
 
 TLS is handled by Caddy via Cloudflare DNS-01 (`*.home.mihirfamily.com` wildcard cert). All backends are HTTP except those marked self-signed TLS, which use `tls_insecure_skip_verify`.
 
@@ -234,12 +234,12 @@ Two `ping` binary sensors in Home Assistant poll each VIP every 5 seconds:
 
 | Entity | Host | Friendly Name |
 |--------|------|---------------|
-| `binary_sensor.192_168_74_240` | 192.168.74.240 | DNS VIP-A |
-| `binary_sensor.192_168_74_245` | 192.168.74.245 | DNS VIP-B |
+| `binary_sensor.192_168_74_28` | 192.168.74.28 | DNS VIP-A |
+| `binary_sensor.192_168_74_33` | 192.168.74.33 | DNS VIP-B |
 
 Two automations handle alerting:
 
-- **`automation.dns_vip_down_alert`** — fires after a VIP has been unreachable for **30 consecutive seconds**. Pushes `🔴 DNS VIP-x is DOWN` to all phones with a deep-link to the surviving VIP's Technitium UI. The 30-second debounce means a clean VRRP failover (~3–5 s) never pages.
+- **`automation.dns_vip_down_alert`** — fires after a VIP has been unreachable for **30 consecutive seconds**. Pushes `🔴 DNS VIP-x is DOWN` to all phones with a deep-link to the surviving VIP's Technitium UI (.28:5380 or .33:5380). The 30-second debounce means a clean VRRP failover (~3–5 s) never pages.
 - **`automation.dns_vip_up_alert`** — fires immediately when a VIP recovers (`off → on`). Pushes `✅ DNS VIP-x is back UP`.
 
 Both run in `parallel` mode (max 2) so simultaneous loss of both VIPs generates two independent alerts.
@@ -257,11 +257,11 @@ Web UI: `https://netbox.home.mihirfamily.com`. Full inventory runbook: [`homelab
 | Netbox record | Type | IP | Notes |
 |---|---|---|---|
 | dns-a | `dcim.device` (DietPi) | 192.168.74.29/24 | primary_ip4 set |
-| dns-b | `dcim.device` (DietPi) | 192.168.74.242/24 | primary_ip4 set |
-| dns-c | `virtualization.vm` (Proxmox) | 192.168.74.243/24 | primary_ip4 set |
-| dns-d | `virtualization.vm` (Proxmox) | 192.168.74.244/24 | primary_ip4 set |
-| VIP-A | IP address (anycast) | 192.168.74.240/24 | dns1.lan |
-| VIP-B | IP address (anycast) | 192.168.74.245/24 | dns2.lan |
+| dns-b | `dcim.device` (DietPi) | 192.168.74.30/24 | primary_ip4 set |
+| dns-c | `virtualization.vm` (Proxmox) | 192.168.74.31/24 | primary_ip4 set |
+| dns-d | `virtualization.vm` (Proxmox) | 192.168.74.32/24 | primary_ip4 set |
+| VIP-A | IP address (anycast) | 192.168.74.28/24 | dns1.lan |
+| VIP-B | IP address (anycast) | 192.168.74.33/24 | dns2.lan |
 
 All nodes carry the `DNS Server` device role.
 
@@ -291,7 +291,7 @@ All nodes carry the `DNS Server` device role.
 | dockge | `virtualization.vm` | 192.168.74.45/24 |
 | homepage | `virtualization.vm` | 192.168.74.40/24 |
 | netbox | `virtualization.vm` | 192.168.74.186/24 |
-| proxmox-datacenter-manager | `virtualization.vm` | 192.168.74.98/24 |
+| proxmox-datacenter-manager | `virtualization.vm` | 192.168.74.10/24 |
 | nginxproxymanager | `virtualization.vm` | 192.168.74.99/24 |
 | apache-guacamole | `virtualization.vm` | 192.168.74.124/24 |
 | tailscale | `virtualization.vm` | 192.168.74.6/24 |
@@ -313,7 +313,7 @@ All nodes carry the `DNS Server` device role.
 | appolo-68 | `dcim.device` | 192.168.74.68/24 | Air Quality Sensor |
 | amcrest-familyroom | `dcim.device` | 192.168.74.72/24 | IP Camera |
 | amcrest-masterbedroom | `dcim.device` | 192.168.74.111/24 | IP Camera |
-| a1mini | `dcim.device` | 192.168.74.147/24 | 3D Printer |
+| a1mini | `dcim.device` | 192.168.74.189/24 | 3D Printer |
 | esp32c3 | `dcim.device` | 192.168.74.159/24 | IoT Device |
 | jetkvm | `dcim.device` | 192.168.74.148/24 | KVM Remote Console |
 | alp4 | `dcim.device` | 192.168.74.15/24 | AAEON PICO-APL4 (DietPi): NVR frontend + NFS storage (was .217; replaced retired Lorex NVR) |
@@ -328,10 +328,10 @@ All nodes carry the `DNS Server` device role.
 for h in DNS-A DNS-B DNS-C DNS-D; do echo -n "$h: "; ssh "$h" "ip -4 -br addr show eth0"; done
 
 # End-to-end resolution test
-dig @192.168.74.240 homeassistant.mihirfamily.com A   # should return 192.168.74.11
-dig @192.168.74.245 doubleclick.net A                 # should be NXDOMAIN (blocked)
-dig @192.168.74.240 google.com A                      # should resolve via Cloudflare DoH
-dig -x 192.168.74.72 @192.168.74.240                  # PTR for amcrest-familyroom
+dig @192.168.74.28 homeassistant.mihirfamily.com A   # should return 192.168.74.11
+dig @192.168.74.33 doubleclick.net A                 # should be NXDOMAIN (blocked)
+dig @192.168.74.28 google.com A                      # should resolve via Cloudflare DoH
+dig -x 192.168.74.72 @192.168.74.28                  # PTR for amcrest-familyroom
 
 # keepalived status on a node
 ssh DNS-A systemctl status keepalived
@@ -362,8 +362,8 @@ Web console: `http://192.168.74.240:5380` or `http://192.168.74.245:5380` (login
 
 | Resource               | URL / Address                         | Credential          |
 |------------------------|---------------------------------------|---------------------|
-| Technitium web console | http://192.168.74.240:5380 (VIP-A)    | admin / (see vault) |
-| Technitium web console | http://192.168.74.245:5380 (VIP-B)    | admin / (see vault) |
+| Technitium web console | http://192.168.74.28:5380 (VIP-A)     | admin / (see vault) |
+| Technitium web console | http://192.168.74.33:5380 (VIP-B)     | admin / (see vault) |
 | Technitium API login   | `GET /api/user/login?user=admin&pass=` | URL-encode password |
 | SSH into any node      | `ssh DNS-A` / `DNS-B` / `DNS-C` / `DNS-D` | root, key-based |
 | Orbi router            | http://192.168.74.1                    | (see vault)         |
